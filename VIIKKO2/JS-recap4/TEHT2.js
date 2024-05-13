@@ -772,23 +772,69 @@ const restaurants = [
 
 // your code here
 
-const map = L.map('map').setView([60.1699, 24.9384], 13);
+const restaurantModal = document.querySelector('.restaurant-modal');
 
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution:
-        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-}).addTo(map);
+const restaurantModalContent = document.querySelector(
+    '.restaurant-modal-content'
+);
 
-for (const restaurant of restaurants) {
-    const marker = L.marker([
-        restaurant.location.coordinates[1],
-        restaurant.location.coordinates[0],
-    ]).addTo(map);
-    console.log(marker);
+const restaurantNameh2 = document.createElement('h2');
+const restaurantAddress = document.createElement('p');
+const restaurantPostalCode = document.createElement('p');
+const restaurantCity = document.createElement('p');
+const restaurantPhone = document.createElement('p');
+const restaurantCompany = document.createElement('p');
 
-    const markerContent = `<h3>${restaurant.name}</h3>
-  <p>${restaurant.address}</p>`;
+function displayRestaurants() {
+    restaurants.sort((a, b) => a.name.localeCompare(b.name));
 
-    marker.bindPopup(markerContent);
+    console.log(restaurants);
+
+    const table = document.querySelector('table');
+
+    for (const restaurant of restaurants) {
+        const row = document.createElement('tr');
+        row.classList.add('row');
+
+        row.innerHTML = `<td>${restaurant.name}
+      <td>${restaurant.address}</td>`;
+
+        row.addEventListener('click', () => {
+            for (const r of table.children) {
+                r.classList.remove('highlight');
+            }
+
+            row.classList.add('highlight');
+            restaurantModal.style.display = 'block';
+
+            restaurantNameh2.textContent = restaurant.name;
+            restaurantAddress.textContent = `Address: ${restaurant.address}`;
+            restaurantPostalCode.textContent = `Postal Code: ${restaurant.postalCode}`;
+            restaurantCity.textContent = `City: ${restaurant.city}`;
+            restaurantPhone.textContent = `Phone: ${restaurant.phone}`;
+            restaurantCompany.textContent = `Company: ${restaurant.company}`;
+
+            restaurantModalContent.appendChild(restaurantNameh2);
+            restaurantModalContent.appendChild(restaurantAddress);
+            restaurantModalContent.appendChild(restaurantPostalCode);
+            restaurantModalContent.appendChild(restaurantCity);
+            restaurantModalContent.appendChild(restaurantPhone);
+            restaurantModalContent.appendChild(restaurantCompany);
+        });
+
+        table.appendChild(row);
+    }
 }
+
+displayRestaurants();
+
+// when clicked outside of the modal, close it
+window.addEventListener('click', e => {
+    if (e.target === restaurantModal) {
+        restaurantModal.style.display = 'none';
+        const rows = document.querySelectorAll('.row');
+        rows.forEach(row => {
+            row.classList.remove('highlight');
+        });
+    }
+});
